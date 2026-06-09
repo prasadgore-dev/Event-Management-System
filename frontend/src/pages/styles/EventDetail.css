@@ -1,0 +1,136 @@
+.event-detail {
+  padding: 20px 0;
+}
+
+.btn-back {
+  background-color: #95a5a6;
+  color: white;
+  padding: 10px 20px;
+  margin-bottom: 30px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.btn-back:hover {
+  background-color: #7f8c8d;
+}
+
+.event-detail-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.event-detail-header {
+  padding: 30px;
+  border-bottom: 2px solid #ecf0f1;
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.event-detail-header h1 {
+  margin: 0;
+  color: #2c3e50;
+  flex: 1;
+}
+
+.event-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.badge-deadline {
+  background-color: #f39c12;
+  color: white;
+}
+
+.event-detail-body {
+  padding: 30px;
+}
+
+.event-section {
+  margin-bottom: 30px;
+}
+
+.event-section h2 {
+  color: #2c3e50;
+  margin-bottom: 15px;
+  font-size: 18px;
+}
+
+.event-section p {
+  color: #555;
+  line-height: 1.8;
+}
+
+.event-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid #3498db;
+}
+
+.info-item .label {
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.info-item .value {
+  color: #555;
+  font-size: 16px;
+}
+
+.event-detail-footer {
+  padding: 20px 30px;
+  background-color: #f8f9fa;
+  border-top: 1px solid #ecf0f1;
+  display: flex;
+  gap: 10px;
+}
+
+.event-detail-footer .btn {
+  flex: 1;
+  min-width: 200px;
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .event-detail-header {
+    flex-direction: column;
+    padding: 20px;
+  }
+
+  .event-detail-body {
+    padding: 20px;
+  }
+
+  .event-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .event-detail-footer {
+    flex-direction: column;
+    padding: 15px 20px;
+  }
+
+  .event-detail-footer .btn {
+    width: 100%;
+    min-width: unset;
+  }
+}
