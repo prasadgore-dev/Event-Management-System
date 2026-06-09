@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('./env');
 
 const JWT_CONFIG = {
   secret: process.env.JWT_SECRET || 'your_secret_key',

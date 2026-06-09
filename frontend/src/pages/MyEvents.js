@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import registrationService from '../services/registrationService';
 import eventService from '../services/eventService';
@@ -84,7 +84,7 @@ function MyEvents() {
       ) : registeredEvents.length === 0 ? (
         <div className="no-events">
           <p>You haven't registered for any events yet.</p>
-          <a href="/" className="btn btn-primary">Browse Events</a>
+          <Link to="/events" className="btn btn-primary">Browse Events</Link>
         </div>
       ) : (
         <>

@@ -1,5 +1,7 @@
 const Registration = require('../models/Registration');
 const Event = require('../models/Event');
+const User = require('../models/User');
+const { sendEventRegistrationEmail } = require('../services/emailService');
 
 const registerEvent = async (req, res) => {
   try {
@@ -35,6 +37,13 @@ const registerEvent = async (req, res) => {
     
     if (result.error) {
       return res.status(result.code).json({ error: result.error });
+    }
+
+    try {
+      const user = await User.findById(userId);
+      await sendEventRegistrationEmail({ user, event });
+    } catch (emailError) {
+      console.error('Registration email error:', emailError);
     }
 
     res.status(201).json({ message: 'Registered successfully', registration: result });

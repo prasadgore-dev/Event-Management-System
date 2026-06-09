@@ -87,7 +87,7 @@ function EventDetail() {
 
   return (
     <div className="event-detail">
-      <button className="btn btn-back" onClick={() => navigate('/')}>
+      <button className="btn btn-back" onClick={() => navigate('/events')}>
         ← Back to Events
       </button>
 
@@ -140,7 +140,7 @@ function EventDetail() {
         <div className="event-detail-footer">
           {!user ? (
             <button className="btn btn-primary" onClick={() => setShowLoginPrompt(true)}>
-              Login to Register
+              Sign in to Register
             </button>
           ) : isRegistered ? (
             <button className="btn btn-danger" onClick={handleCancelRegistration}>

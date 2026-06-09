@@ -58,7 +58,7 @@ function EventCard({ event, onRegister, onCancel, isRegistered }) {
               onClick={handleRegisterClick}
               disabled={isEventFull || hasPassedDeadline}
             >
-              {isEventFull ? 'Sold Out' : hasPassedDeadline ? 'Deadline Passed' : 'Register'}
+              {isEventFull ? 'Sold Out' : hasPassedDeadline ? 'Deadline Passed' : user ? 'Register' : 'Sign in to Register'}
             </button>
           )}
         </div>

@@ -20,6 +20,9 @@ function Navigation() {
         </Link>
         <div className="nav-menu">
           <Link to="/" className="nav-link">
+            Home
+          </Link>
+          <Link to="/events" className="nav-link">
             Events
           </Link>
           {user && user.role !== 'admin' && (
