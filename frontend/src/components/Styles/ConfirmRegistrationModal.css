@@ -1,0 +1,123 @@
+.confirm-registration-overlay {
+  align-items: center;
+  background: rgba(12, 24, 36, 0.58);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 24px;
+  position: fixed;
+  z-index: 1000;
+}
+
+.confirm-registration-modal {
+  background: #ffffff;
+  border: 1px solid #e4e9ee;
+  border-radius: 8px;
+  box-shadow: 0 22px 60px rgba(8, 21, 33, 0.28);
+  max-width: 520px;
+  padding: 24px;
+  width: min(520px, 100%);
+}
+
+.confirm-registration-header {
+  align-items: flex-start;
+  border-bottom: 1px solid #e4e9ee;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+}
+
+.confirm-registration-header p {
+  color: #246b8f;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.confirm-registration-header h2 {
+  color: #18324a;
+  font-size: 24px;
+}
+
+.confirm-registration-close {
+  align-items: center;
+  background: #eef3f6;
+  border-radius: 50%;
+  color: #52677a;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 26px;
+  height: 38px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 38px;
+}
+
+.confirm-registration-details {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 18px;
+}
+
+.confirm-registration-details div {
+  background: #f7fafb;
+  border: 1px solid #e4e9ee;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.confirm-registration-details span {
+  color: #66788a;
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.confirm-registration-details strong,
+.confirm-registration-copy {
+  color: #18324a;
+}
+
+.confirm-registration-copy {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.confirm-registration-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.confirm-registration-actions .btn {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 560px) {
+  .confirm-registration-overlay {
+    align-items: flex-start;
+    padding: 14px;
+  }
+
+  .confirm-registration-details,
+  .confirm-registration-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .confirm-registration-actions {
+    flex-direction: column;
+  }
+
+  .confirm-registration-actions .btn {
+    width: 100%;
+  }
+}

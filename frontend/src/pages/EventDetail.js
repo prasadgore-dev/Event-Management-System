@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoginPrompt from '../components/LoginPrompt';
+import ConfirmRegistrationModal from '../components/ConfirmRegistrationModal';
 import eventService from '../services/eventService';
 import registrationService from '../services/registrationService';
 import './styles/EventDetail.css';
@@ -15,6 +16,8 @@ function EventDetail() {
   const [isRegistered, setIsRegistered] = useState(false);
   const [userRegistrations, setUserRegistrations] = useState([]);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showConfirmRegistration, setShowConfirmRegistration] = useState(false);
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false);
 
   const loadEvent = useCallback(async () => {
     try {
@@ -47,7 +50,12 @@ function EventDetail() {
 
 
 
-  const handleRegister = async () => {
+  const handleRegister = () => {
+    setShowConfirmRegistration(true);
+  };
+
+  const confirmRegister = async () => {
+    setShowConfirmRegistration(false);
     try {
       await registrationService.registerEvent(parseInt(id));
       alert('Successfully registered for event!');
@@ -58,10 +66,12 @@ function EventDetail() {
     }
   };
 
-  const handleCancelRegistration = async () => {
-    if (!window.confirm('Are you sure you want to cancel your registration?')) {
-      return;
-    }
+  const handleCancelRegistration = () => {
+    setShowConfirmCancel(true);
+  };
+
+  const confirmCancelRegistration = async () => {
+    setShowConfirmCancel(false);
     try {
       const registration = userRegistrations.find(r => r === parseInt(id));
       await registrationService.cancelRegistration(registration);
@@ -158,6 +168,19 @@ function EventDetail() {
         </div>
       </div>
       <LoginPrompt isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)} />
+      <ConfirmRegistrationModal
+        event={event}
+        isOpen={showConfirmRegistration}
+        onClose={() => setShowConfirmRegistration(false)}
+        onConfirm={confirmRegister}
+      />
+      <ConfirmRegistrationModal
+        event={event}
+        isOpen={showConfirmCancel}
+        onClose={() => setShowConfirmCancel(false)}
+        onConfirm={confirmCancelRegistration}
+        mode="cancel"
+      />
     </div>
   );
 }

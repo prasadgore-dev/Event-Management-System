@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
+import ContactUs from './pages/ContactUs';
+import HostEventRequests from './pages/HostEventRequests';
 import EventDetail from './pages/EventDetail';
 import MyEvents from './pages/MyEvents';
 import './App.css';
@@ -22,12 +24,14 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/events" element={<Events />} />
+              <Route path="/contact-us" element={<ContactUs />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/event/:id" element={<EventDetail />} />
               <Route path="/my-events" element={<MyEvents />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/admin/users" element={<Users />} />
+              <Route path="/admin/host-event-requests" element={<HostEventRequests />} />
             </Routes>
           </main>
         </div>

@@ -16,7 +16,7 @@ function Navigation() {
     <nav className="navbar">
       <div className="nav-container">
         <Link to="/" className="nav-logo">
-          📅 Event Management
+          📅 Event Hub
         </Link>
         <div className="nav-menu">
           <Link to="/" className="nav-link">
@@ -25,6 +25,11 @@ function Navigation() {
           <Link to="/events" className="nav-link">
             Events
           </Link>
+          {user && user.role !== 'admin' && (
+            <Link to="/contact-us" className="nav-link">
+              Host Event
+            </Link>
+          )}
           {user && user.role !== 'admin' && (
             <Link to="/my-events" className="nav-link">
               My Events
@@ -37,6 +42,9 @@ function Navigation() {
               </Link>
               <Link to="/admin/users" className="nav-link">
                 Users
+              </Link>
+              <Link to="/admin/host-event-requests" className="nav-link">
+                Requests
               </Link>
             </>
           )}

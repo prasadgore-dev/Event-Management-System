@@ -1,240 +1,446 @@
-# Event Management System - Project Structure
+# Event Hub - Event Management System
 
-## Overview
-Complete full-stack Event Management System built with React, Express.js, and MySQL.
+Event Hub is a full-stack event management application built with React, Express.js, and MySQL. It lets attendees browse events, register for events, manage their registrations, and submit requests to host new events. Admin users can manage events, view registered users, review host-event requests, and approve submitted requests into live events.
+
+## Table of Contents
+
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [Database](#database)
+- [Available Scripts](#available-scripts)
+- [Application Routes](#application-routes)
+- [API Endpoints](#api-endpoints)
+- [Default Admin Account](#default-admin-account)
+- [Security Notes](#security-notes)
+- [Development Notes](#development-notes)
+
+## Features
+
+### Public and Attendee Features
+
+- User registration and login with JWT authentication.
+- Event browsing with search, category filtering, date filtering, pagination, and capacity details.
+- Event detail pages with full event information and remaining capacity.
+- Authenticated event registration with duplicate-registration prevention.
+- Registration cancellation from the user's "My Events" page.
+- Optional registration confirmation emails through SMTP.
+- Host-event request form for attendees who want to propose events.
+- Personal host-event request tracking based on the signed-in user's email.
+
+### Admin Features
+
+- Admin dashboard for creating, updating, and deleting events.
+- Event capacity protection when updating event capacity below current registrations.
+- User management view with user statistics.
+- Event registration list for individual events.
+- Host-event request review screen.
+- Approve host-event requests and create hosted events from request data.
+- Reject host-event requests.
+- Role-based access control for admin-only API routes and UI pages.
+
+### Backend Features
+
+- REST API built with Express.js.
+- MySQL connection pooling with `mysql2/promise`.
+- Password hashing with `bcryptjs`.
+- Access and refresh token support with `jsonwebtoken`.
+- Authentication and admin authorization middleware.
+- Registration capacity checks inside database transactions.
+- CORS configured for the React frontend.
+- Centralized environment loading through `backend/src/config/env.js`.
+
+## Tech Stack
+
+### Frontend
+
+- React 18
+- React Router DOM 6
+- Axios
+- React Context API for authentication state
+- Plain CSS files organized by component/page
+- Create React App tooling through `react-scripts`
+
+### Backend
+
+- Node.js
+- Express.js
+- MySQL
+- mysql2
+- bcryptjs
+- jsonwebtoken
+- nodemailer
+- dotenv
+- nodemon for development
+
+### Database
+
+- MySQL database named `event_management_db`
+- Tables for users, events, registrations, and host-event requests
+- Foreign keys, uniqueness constraints, and indexes for common lookups
 
 ## Project Structure
 
-```
+```text
 Event Management/
-├── backend/                 # Node.js + Express API
-│   ├── src/
-│   │   ├── config/         # Configuration files
-│   │   │   ├── database.js # MySQL connection pool
-│   │   │   └── jwt.js      # JWT configuration
-│   │   ├── controllers/    # Request handlers
-│   │   │   ├── authController.js
-│   │   │   ├── eventController.js
-│   │   │   └── registrationController.js
-│   │   ├── middleware/     # Custom middleware
-│   │   │   └── auth.js     # JWT authentication
-│   │   ├── models/         # Database models
-│   │   │   ├── User.js
-│   │   │   ├── Event.js
-│   │   │   └── Registration.js
-│   │   ├── routes/         # API routes
-│   │   │   ├── authRoutes.js
-│   │   │   ├── eventRoutes.js
-│   │   │   └── registrationRoutes.js
-│   │   ├── utils/          # Utility functions
-│   │   │   ├── passwordUtils.js
-│   │   │   └── tokenUtils.js
-│   │   └── server.js       # Express app initialization
-│   ├── package.json
-│   ├── .env.example
-│   └── .gitignore
-│
-├── frontend/                # React UI
-│   ├── src/
-│   │   ├── components/     # Reusable components
-│   │   │   ├── Navigation.js
-│   │   │   └── EventCard.js
-│   │   ├── pages/          # Page components
-│   │   │   ├── Home.js
-│   │   │   ├── Login.js
-│   │   │   ├── Register.js
-│   │   │   ├── Dashboard.js
-│   │   │   └── EventDetail.js
-│   │   ├── services/       # API services
-│   │   │   ├── api.js      # Axios instance
-│   │   │   ├── authService.js
-│   │   │   ├── eventService.js
-│   │   │   └── registrationService.js
-│   │   ├── context/        # Context API
-│   │   │   └── AuthContext.js
-│   │   ├── utils/          # Utility functions
-│   │   ├── App.js
-│   │   ├── App.css
-│   │   ├── index.js
-│   │   └── index.css
-│   ├── public/
-│   │   └── index.html
-│   ├── package.json
-│   ├── .env.example
-│   └── .gitignore
-│
-├── database/               # Database setup
-│   └── schema.sql         # MySQL schema and initial data
-│
-└── .github/
-    └── copilot-instructions.md
+|-- backend/
+|   |-- src/
+|   |   |-- config/
+|   |   |   |-- database.js
+|   |   |   |-- env.js
+|   |   |   `-- jwt.js
+|   |   |-- controllers/
+|   |   |   |-- authController.js
+|   |   |   |-- eventController.js
+|   |   |   |-- hostEventRequestController.js
+|   |   |   |-- registrationController.js
+|   |   |   `-- userController.js
+|   |   |-- middleware/
+|   |   |   `-- auth.js
+|   |   |-- models/
+|   |   |   |-- Event.js
+|   |   |   |-- HostEventRequest.js
+|   |   |   |-- Registration.js
+|   |   |   `-- User.js
+|   |   |-- routes/
+|   |   |   |-- authRoutes.js
+|   |   |   |-- eventRoutes.js
+|   |   |   |-- hostEventRequestRoutes.js
+|   |   |   |-- registrationRoutes.js
+|   |   |   `-- userRoutes.js
+|   |   |-- services/
+|   |   |   `-- emailService.js
+|   |   |-- utils/
+|   |   |   |-- passwordUtils.js
+|   |   |   `-- tokenUtils.js
+|   |   `-- server.js
+|   |-- .env.example
+|   |-- package.json
+|   `-- package-lock.json
+|-- database/
+|   |-- schema.sql
+|   |-- seed_events.sql
+|   |-- add_category.sql
+|   |-- add_host_event_requests.sql
+|   |-- add_hosted_event_id_to_requests.sql
+|   `-- update_admin.sql
+|-- frontend/
+|   |-- public/
+|   |   `-- index.html
+|   |-- src/
+|   |   |-- assets/
+|   |   |   `-- eventhub-hero.png
+|   |   |-- components/
+|   |   |   |-- ConfirmRegistrationModal.js
+|   |   |   |-- EventCard.js
+|   |   |   |-- LoginPrompt.js
+|   |   |   |-- Navigation.js
+|   |   |   `-- Styles/
+|   |   |-- context/
+|   |   |   `-- AuthContext.js
+|   |   |-- pages/
+|   |   |   |-- ContactUs.jsx
+|   |   |   |-- Dashboard.js
+|   |   |   |-- EventDetail.js
+|   |   |   |-- Events.js
+|   |   |   |-- Home.js
+|   |   |   |-- HostEventRequests.jsx
+|   |   |   |-- Login.js
+|   |   |   |-- MyEvents.js
+|   |   |   |-- Register.js
+|   |   |   |-- Users.js
+|   |   |   `-- styles/
+|   |   |-- services/
+|   |   |   |-- api.js
+|   |   |   |-- authService.js
+|   |   |   |-- eventService.js
+|   |   |   |-- hostEventRequestService.js
+|   |   |   |-- registrationService.js
+|   |   |   `-- userService.js
+|   |   |-- App.js
+|   |   |-- App.css
+|   |   |-- index.js
+|   |   `-- index.css
+|   |-- .env.example
+|   |-- package.json
+|   `-- package-lock.json
+|-- DEVELOPMENT.md
+|-- REQUIREMENTS.md
+`-- README.md
 ```
 
-## Features Implemented
+## Prerequisites
 
-### Backend (Express.js)
-- **Authentication**: JWT-based authentication with access and refresh tokens
-- **User Management**: Registration and login with bcrypt password hashing
-- **Event Management**: CRUD operations with capacity tracking
-- **Registrations**: Event registration with real-time capacity management
-- **Database Transactions**: Atomic operations to prevent race conditions
-- **Error Handling**: Comprehensive error responses with appropriate HTTP status codes
+- Node.js 14 or newer
+- npm
+- MySQL 5.7 or newer
+- A MySQL user with permission to create databases and tables
 
-### Frontend (React)
-- **Routing**: React Router for navigation
-- **Authentication Context**: Global auth state management
-- **Services**: Modular API service layer with Axios
-- **Components**: Reusable UI components (Navigation, EventCard)
-- **Pages**: 
-  - Home (event browsing with search)
-  - Login/Register
-  - Event Detail
-  - Admin Dashboard
+## Getting Started
 
-### Database (MySQL)
-- **Users Table**: Stores user accounts with roles
-- **Events Table**: Event details with capacity
-- **Registrations Table**: User-event associations
-- **Indexing**: Performance optimization with strategic indexes
-- **Foreign Keys**: Data integrity with constraints
+### 1. Clone or Open the Project
 
-## API Endpoints
+```bash
+cd "Event Management"
+```
 
-### Authentication
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `POST /api/auth/refresh` - Token refresh
+### 2. Install Backend Dependencies
 
-### Events
-- `GET /api/events` - List all events (public)
-- `GET /api/events/:id` - Get event details (public)
-- `POST /api/events` - Create event (admin only)
-- `PUT /api/events/:id` - Update event (admin only)
-- `DELETE /api/events/:id` - Delete event (admin only)
+```bash
+cd backend
+npm install
+```
 
-### Registrations
-- `POST /api/registrations` - Register for event (authenticated)
-- `DELETE /api/registrations/:registrationId` - Cancel registration (authenticated)
-- `GET /api/registrations/user/my-registrations` - Get user registrations (authenticated)
-- `GET /api/registrations/event/:eventId` - Get event registrations (admin only)
+### 3. Install Frontend Dependencies
 
-## Requirements Mapping
+```bash
+cd ../frontend
+npm install
+```
 
-| Requirement | Implementation |
-|---|---|
-| Req 1: User Registration | `POST /api/auth/register` with validation |
-| Req 2: JWT Authentication | JWT tokens with 15m/7d expiry |
-| Req 3: Browse Events | `GET /api/events` with search & filters |
-| Req 4: Event Registration | `POST /api/registrations` with capacity check |
-| Req 5: Cancel Registration | `DELETE /api/registrations/:id` |
-| Req 6: Admin Create Events | `POST /api/events` (admin only) |
-| Req 7: Admin Update Events | `PUT /api/events/:id` (admin only) |
-| Req 8: Admin Delete Events | `DELETE /api/events/:id` (admin only) |
-| Req 9: Admin Dashboard | `/dashboard` page with full controls |
-| Req 10: Capacity Tracking | Database transactions prevent race conditions |
+### 4. Configure Environment Files
 
-## Technology Stack
+Create `backend/.env` from `backend/.env.example` and update the database, JWT, CORS, and optional SMTP values.
 
-### Backend
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Database**: MySQL
-- **Authentication**: JSON Web Tokens (JWT)
-- **Password Hashing**: bcryptjs
-- **ORM/Query**: mysql2/promise
+Create `frontend/.env` from `frontend/.env.example` and set the backend API URL.
 
-### Frontend
-- **Framework**: React 18
-- **Routing**: React Router v6
-- **HTTP Client**: Axios
-- **State Management**: Context API
-- **Styling**: CSS (component-scoped)
+### 5. Create and Seed the Database
 
-## Setup Instructions
+From the project root:
 
-### Prerequisites
-- Node.js (v14+)
-- MySQL (v5.7+)
-- npm or yarn
+```bash
+mysql -u root -p < database/schema.sql
+mysql -u root -p event_management_db < database/seed_events.sql
+```
 
-### Backend Setup
-1. Navigate to `backend/`
-2. Create `.env` file from `.env.example` and configure database credentials
-3. Run `npm install`
-4. Create database: `mysql -u root < ../database/schema.sql`
-5. Start server: `npm run dev` or `npm start`
+The schema file creates the database, all current tables, useful indexes, and the default admin account.
 
-### Frontend Setup
-1. Navigate to `frontend/`
-2. Create `.env` file from `.env.example`
-3. Run `npm install`
-4. Start development server: `npm start`
+### 6. Start the Backend
 
-### Database Setup
-1. Create MySQL database and tables using `database/schema.sql`
-2. Update backend `.env` with database credentials
+```bash
+cd backend
+npm run dev
+```
 
-## Default Admin Account
-- **Email**: admin@example.com
-- **Password**: admin123 (Change after first login)
+The API runs on `http://localhost:5000` by default.
+
+### 7. Start the Frontend
+
+In another terminal:
+
+```bash
+cd frontend
+npm run dev
+```
+
+The React app runs on `http://localhost:3000` by default.
 
 ## Environment Variables
 
-### Backend (.env)
-```
+### Backend `.env`
+
+```env
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=your_password
 DB_NAME=event_management_db
 DB_PORT=3306
-JWT_SECRET=your_secret_key
-JWT_REFRESH_SECRET=your_refresh_secret_key
+
+JWT_SECRET=your_secret_key_change_in_production
+JWT_REFRESH_SECRET=your_refresh_secret_key_change_in_production
 ACCESS_TOKEN_EXPIRY=15m
 REFRESH_TOKEN_EXPIRY=7d
+
 PORT=5000
+NODE_ENV=development
 FRONTEND_URL=http://localhost:3000
+
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_email@example.com
+SMTP_PASSWORD=your_app_password
+MAIL_FROM="Event Management <your_email@example.com>"
 ```
 
-### Frontend (.env)
-```
+SMTP settings are optional. If they are not configured, event registration still works and the backend logs that email delivery was skipped.
+
+### Frontend `.env`
+
+```env
 REACT_APP_API_URL=http://localhost:5000/api
 ```
 
-## Key Features
+## Database
 
-✅ User Registration with validation
-✅ JWT-based authentication
-✅ Event browsing with search and filters
-✅ Event registration with capacity management
-✅ Admin dashboard for event management
-✅ Race condition prevention with transactions
-✅ Responsive UI design
-✅ Error handling and validation
-✅ Protected routes based on user roles
+The main schema lives in `database/schema.sql` and includes:
 
-## Security Considerations
+- `users`: attendee and admin accounts.
+- `events`: event title, description, date/time, location, capacity, deadline, and category.
+- `registrations`: many-to-many user/event registration records with a unique user-event constraint.
+- `host_event_requests`: attendee-submitted event proposals with pending, approved, and rejected states.
 
-- Passwords stored as bcrypt hashes
-- JWT tokens with expiration
-- Refresh token rotation
-- CORS enabled for frontend
-- Input validation on all endpoints
-- Database transactions for atomic operations
-- Role-based access control (RBAC)
+Additional database scripts:
 
-## Next Steps
+- `database/seed_events.sql`: inserts sample events across multiple categories.
+- `database/add_category.sql`: migration for older databases that do not have the `events.category` column.
+- `database/add_host_event_requests.sql`: migration for older databases that do not have host-event requests.
+- `database/add_hosted_event_id_to_requests.sql`: migration for older host-request tables missing the hosted event link.
+- `database/update_admin.sql`: helper script for updating the admin account.
 
-1. Configure environment variables
-2. Set up MySQL database
-3. Install dependencies for both backend and frontend
-4. Run migrations if needed
-5. Start both servers
-6. Access application at `http://localhost:3000`
+## Available Scripts
 
-## Notes
+### Backend
 
-- The project uses modern async/await patterns
-- Database operations use connection pooling
-- Component-scoped CSS for styling
-- RESTful API design
-- Error messages are user-friendly
+Run from `backend/`.
+
+```bash
+npm start
+```
+
+Starts the Express API with Node.
+
+```bash
+npm run dev
+```
+
+Starts the Express API with Nodemon for development.
+
+```bash
+npm test
+```
+
+Currently a placeholder script that exits with an error.
+
+### Frontend
+
+Run from `frontend/`.
+
+```bash
+npm run dev
+```
+
+Starts the React development server.
+
+```bash
+npm run build
+```
+
+Builds the production frontend into `frontend/dist`.
+
+```bash
+npm test
+```
+
+Starts the Create React App test runner.
+
+```bash
+npm run eject
+```
+
+Ejects Create React App configuration.
+
+## Application Routes
+
+### Public Routes
+
+- `/`: Home page.
+- `/events`: Event listing page.
+- `/event/:id`: Event detail page.
+- `/login`: Login page.
+- `/register`: Registration page.
+
+### Attendee Routes
+
+- `/contact-us`: Host-event request form.
+- `/my-events`: User registrations and submitted host-event requests.
+
+### Admin Routes
+
+- `/dashboard`: Event management dashboard.
+- `/admin/users`: User list and user statistics.
+- `/admin/host-event-requests`: Host-event request review.
+
+## API Endpoints
+
+The API base URL is `/api`.
+
+### Health
+
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| GET | `/health` | Public | API health check. |
+
+### Authentication
+
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| POST | `/api/auth/register` | Public | Register a new attendee account. |
+| POST | `/api/auth/login` | Public | Log in and receive access and refresh tokens. |
+| POST | `/api/auth/refresh` | Public | Exchange a refresh token for a new access token. |
+
+### Events
+
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| GET | `/api/events` | Public | List events with `page`, `limit`, `search`, `startDate`, `endDate`, and `category` query filters. |
+| GET | `/api/events/:id` | Public | Get one event with registration count and remaining capacity. |
+| POST | `/api/events` | Admin | Create an event. |
+| PUT | `/api/events/:id` | Admin | Update an event. |
+| DELETE | `/api/events/:id` | Admin | Delete an event and its registrations. |
+
+### Registrations
+
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| POST | `/api/registrations` | Authenticated | Register the current user for an event. |
+| DELETE | `/api/registrations/:registrationId` | Authenticated | Cancel the current user's registration. |
+| GET | `/api/registrations/user/my-registrations` | Authenticated | List the current user's event registrations. |
+| GET | `/api/registrations/event/:eventId` | Admin | List users registered for one event. |
+
+### Users
+
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| GET | `/api/users` | Admin | List users with registration statistics. |
+
+### Host-Event Requests
+
+| Method | Endpoint | Access | Description |
+| --- | --- | --- | --- |
+| POST | `/api/host-event-requests` | Public | Submit a request to host an event. |
+| GET | `/api/host-event-requests/my-requests` | Authenticated | List requests submitted by the signed-in user's email. |
+| GET | `/api/host-event-requests` | Admin | List all host-event requests. |
+| PATCH | `/api/host-event-requests/:id/status` | Admin | Approve or reject a request. Approval can create a hosted event. |
+
+## Default Admin Account
+
+The schema inserts a default admin user:
+
+```text
+Email: admin@example.com
+Password: admin123
+```
+
+Change this password before using the application outside local development.
+
+## Security Notes
+
+- Passwords are stored as bcrypt hashes.
+- Access and refresh tokens are signed with separate JWT secrets.
+- Admin-only routes use authentication plus role authorization middleware.
+- Registrations are protected by ownership checks before cancellation.
+- Event capacity is checked during registration with a database transaction.
+- CORS is restricted to `FRONTEND_URL`.
+- Production deployments should use strong JWT secrets, secure SMTP credentials, HTTPS, and a non-default admin password.
+
+## Development Notes
+
+- Backend environment variables are loaded from `backend/.env`.
+- The frontend Axios instance automatically attaches the access token from local storage.
+- The Axios response interceptor attempts token refresh on `401` responses outside auth endpoints.
+- `frontend/package.json` builds production assets into `frontend/dist`.
+- There are no dedicated automated backend tests yet; add focused tests before changing shared business logic.

@@ -54,9 +54,6 @@ function MyEvents() {
   };
 
   const handleCancelRegistration = async (eventId, registrationId) => {
-    if (!window.confirm('Are you sure you want to cancel your registration?')) {
-      return;
-    }
     try {
       await registrationService.cancelRegistration(registrationId);
       alert('Registration cancelled successfully');

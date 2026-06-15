@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoginPrompt from './LoginPrompt';
+import ConfirmRegistrationModal from './ConfirmRegistrationModal';
 import './Styles/EventCard.css';
 
 function EventCard({ event, onRegister, onCancel, isRegistered }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [showConfirmRegistration, setShowConfirmRegistration] = useState(false);
+  const [showConfirmCancel, setShowConfirmCancel] = useState(false);
   const remainingCapacity = event.capacity - event.registered_count;
   const isEventFull = remainingCapacity <= 0;
   const hasPassedDeadline = event.registration_deadline && new Date(event.registration_deadline) < new Date();
@@ -17,12 +20,22 @@ function EventCard({ event, onRegister, onCancel, isRegistered }) {
     if (!user) {
       setShowLoginPrompt(true);
     } else {
-      onRegister(event.id);
+      setShowConfirmRegistration(true);
     }
+  };
+
+  const handleConfirmRegistration = () => {
+    setShowConfirmRegistration(false);
+    onRegister(event.id);
   };
 
   const handleCancelClick = (e) => {
     e.stopPropagation();
+    setShowConfirmCancel(true);
+  };
+
+  const handleConfirmCancel = () => {
+    setShowConfirmCancel(false);
     onCancel(event.id);
   };
 
@@ -64,6 +77,19 @@ function EventCard({ event, onRegister, onCancel, isRegistered }) {
         </div>
       </div>
       <LoginPrompt isOpen={showLoginPrompt} onClose={() => setShowLoginPrompt(false)} />
+      <ConfirmRegistrationModal
+        event={event}
+        isOpen={showConfirmRegistration}
+        onClose={() => setShowConfirmRegistration(false)}
+        onConfirm={handleConfirmRegistration}
+      />
+      <ConfirmRegistrationModal
+        event={event}
+        isOpen={showConfirmCancel}
+        onClose={() => setShowConfirmCancel(false)}
+        onConfirm={handleConfirmCancel}
+        mode="cancel"
+      />
     </>
   );
 }
