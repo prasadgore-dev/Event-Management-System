@@ -1,15 +1,15 @@
 const pool = require('../config/database');
 
 class Event {
-  static async create(title, description, eventDate, location, capacity, registrationDeadline = null) {
+  static async create(title, description, eventDate, location, capacity, registrationDeadline = null, category = 'Conference') {
     try {
       const connection = await pool.getConnection();
       const [result] = await connection.execute(
-        'INSERT INTO events (title, description, event_date, location, capacity, registration_deadline) VALUES (?, ?, ?, ?, ?, ?)',
-        [title, description, eventDate, location, capacity, registrationDeadline]
+        'INSERT INTO events (title, description, event_date, location, capacity, registration_deadline, category) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [title, description, eventDate, location, capacity, registrationDeadline, category]
       );
       connection.release();
-      return { id: result.insertId, title, description, eventDate, location, capacity, registrationDeadline };
+      return { id: result.insertId, title, description, eventDate, location, capacity, registrationDeadline, category };
     } catch (error) {
       throw error;
     }

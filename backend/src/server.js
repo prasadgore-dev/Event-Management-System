@@ -7,6 +7,7 @@ const authRoutes = require('./routes/authRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const registrationRoutes = require('./routes/registrationRoutes');
 const userRoutes = require('./routes/userRoutes');
+const hostEventRequestRoutes = require('./routes/hostEventRequestRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/events', eventRoutes);
 app.use('/api/registrations', registrationRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/host-event-requests', hostEventRequestRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
