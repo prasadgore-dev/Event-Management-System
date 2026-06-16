@@ -1,6 +1,6 @@
 # Event Hub - Event Management System
 
-Event Hub is a full-stack event management application built with React, Express.js, and MySQL. It lets attendees browse events, register for events, manage their registrations, and submit requests to host new events. Admin users can manage events, view registered users, review host-event requests, and approve submitted requests into live events.
+Event Hub is a full-stack event management application built with React, Express.js, and PostgreSQL. It lets attendees browse events, register for events, manage their registrations, and submit requests to host new events. Admin users can manage events, view registered users, review host-event requests, and approve submitted requests into live events.
 
 ## Table of Contents
 
@@ -45,7 +45,7 @@ Event Hub is a full-stack event management application built with React, Express
 ### Backend Features
 
 - REST API built with Express.js.
-- MySQL connection pooling with `mysql2/promise`.
+- PostgreSQL connection pooling with `pg`.
 - Password hashing with `bcryptjs`.
 - Access and refresh token support with `jsonwebtoken`.
 - Authentication and admin authorization middleware.
@@ -68,8 +68,8 @@ Event Hub is a full-stack event management application built with React, Express
 
 - Node.js
 - Express.js
-- MySQL
-- mysql2
+- PostgreSQL
+- pg
 - bcryptjs
 - jsonwebtoken
 - nodemailer
@@ -78,7 +78,7 @@ Event Hub is a full-stack event management application built with React, Express
 
 ### Database
 
-- MySQL database named `event_management_db`
+- PostgreSQL database named `event_management_db`
 - Tables for users, events, registrations, and host-event requests
 - Foreign keys, uniqueness constraints, and indexes for common lookups
 
@@ -121,12 +121,9 @@ Event Management/
 |   |-- package.json
 |   `-- package-lock.json
 |-- database/
+|   |-- migrations/
 |   |-- schema.sql
-|   |-- seed_events.sql
-|   |-- add_category.sql
-|   |-- add_host_event_requests.sql
-|   |-- add_hosted_event_id_to_requests.sql
-|   `-- update_admin.sql
+|   `-- seed_events.sql
 |-- frontend/
 |   |-- public/
 |   |   `-- index.html
@@ -176,8 +173,8 @@ Event Management/
 
 - Node.js 14 or newer
 - npm
-- MySQL 5.7 or newer
-- A MySQL user with permission to create databases and tables
+- PostgreSQL 12 or newer
+- A PostgreSQL user with permission to create databases and tables
 
 ## Getting Started
 
@@ -209,14 +206,20 @@ Create `frontend/.env` from `frontend/.env.example` and set the backend API URL.
 
 ### 5. Create and Seed the Database
 
-From the project root:
+Create the database once:
 
 ```bash
-mysql -u root -p < database/schema.sql
-mysql -u root -p event_management_db < database/seed_events.sql
+createdb event_management_db
 ```
 
-The schema file creates the database, all current tables, useful indexes, and the default admin account.
+Then initialize the schema and seed data from the backend:
+
+```bash
+cd backend
+npm run init:db
+```
+
+The schema file creates all current tables, useful indexes, update triggers, and the default admin account.
 
 ### 6. Start the Backend
 
@@ -243,11 +246,14 @@ The React app runs on `http://localhost:3000` by default.
 ### Backend `.env`
 
 ```env
+DATABASE_URL=postgres://postgres:your_password@localhost:5432/event_management_db
 DB_HOST=localhost
-DB_USER=root
+DB_USER=postgres
 DB_PASSWORD=your_password
 DB_NAME=event_management_db
-DB_PORT=3306
+DB_PORT=5432
+DB_SSL=false
+DB_POOL_SIZE=10
 
 JWT_SECRET=your_secret_key_change_in_production
 JWT_REFRESH_SECRET=your_refresh_secret_key_change_in_production
@@ -286,10 +292,7 @@ The main schema lives in `database/schema.sql` and includes:
 Additional database scripts:
 
 - `database/seed_events.sql`: inserts sample events across multiple categories.
-- `database/add_category.sql`: migration for older databases that do not have the `events.category` column.
-- `database/add_host_event_requests.sql`: migration for older databases that do not have host-event requests.
-- `database/add_hosted_event_id_to_requests.sql`: migration for older host-request tables missing the hosted event link.
-- `database/update_admin.sql`: helper script for updating the admin account.
+- `database/migrations/`: future production migrations. Add timestamp-prefixed `.sql` files here and run them with `npm run migrate` from `backend`.
 
 ## Available Scripts
 
@@ -308,6 +311,18 @@ npm run dev
 ```
 
 Starts the Express API with Nodemon for development.
+
+```bash
+npm run init:db
+```
+
+Initializes a fresh database with the full schema and seed data.
+
+```bash
+npm run migrate
+```
+
+Runs pending production migrations from `database/migrations`.
 
 ```bash
 npm test

@@ -1,31 +1,41 @@
-const pool = require('../config/database');
+const db = require('../config/database');
 
 class HostEventRequest {
   static async ensureSchema() {
-    const connection = await pool.getConnection();
-    try {
-      const [columns] = await connection.execute(
-        `SELECT COLUMN_NAME
-         FROM INFORMATION_SCHEMA.COLUMNS
-         WHERE TABLE_SCHEMA = DATABASE()
-           AND TABLE_NAME = 'host_event_requests'
-           AND COLUMN_NAME = 'hosted_event_id'`
-      );
-
-      if (columns.length === 0) {
-        await connection.execute(
-          'ALTER TABLE host_event_requests ADD COLUMN hosted_event_id INT NULL AFTER additional_message'
-        );
-      }
-    } finally {
-      connection.release();
-    }
+    await db.query('ALTER TABLE host_event_requests ADD COLUMN IF NOT EXISTS hosted_event_id INTEGER REFERENCES events(id) ON DELETE SET NULL');
   }
 
   static async create(requestData) {
-    const connection = await pool.getConnection();
-    try {
-      const {
+    const {
+      fullName,
+      email,
+      phoneNumber,
+      eventTitle,
+      eventCategory,
+      eventDescription,
+      eventDate,
+      eventTime,
+      eventLocation,
+      expectedParticipants,
+      additionalMessage,
+    } = requestData;
+
+    const result = await db.query(
+      `INSERT INTO host_event_requests (
+        full_name,
+        email,
+        phone_number,
+        event_title,
+        event_category,
+        event_description,
+        event_date,
+        event_time,
+        event_location,
+        expected_participants,
+        additional_message
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+      RETURNING id, status`,
+      [
         fullName,
         email,
         phoneNumber,
@@ -36,157 +46,72 @@ class HostEventRequest {
         eventTime,
         eventLocation,
         expectedParticipants,
-        additionalMessage,
-      } = requestData;
+        additionalMessage || null,
+      ]
+    );
 
-      const [result] = await connection.execute(
-        `INSERT INTO host_event_requests (
-          full_name,
-          email,
-          phone_number,
-          event_title,
-          event_category,
-          event_description,
-          event_date,
-          event_time,
-          event_location,
-          expected_participants,
-          additional_message
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          fullName,
-          email,
-          phoneNumber,
-          eventTitle,
-          eventCategory,
-          eventDescription,
-          eventDate,
-          eventTime,
-          eventLocation,
-          expectedParticipants,
-          additionalMessage || null,
-        ]
-      );
+    return { id: result.rows[0].id, ...requestData, status: result.rows[0].status };
+  }
 
-      return { id: result.insertId, ...requestData, status: 'pending' };
-    } finally {
-      connection.release();
-    }
+  static selectFields() {
+    return `SELECT
+      id,
+      full_name,
+      email,
+      phone_number,
+      event_title,
+      event_category,
+      event_description,
+      event_date,
+      event_time,
+      event_location,
+      expected_participants,
+      additional_message,
+      hosted_event_id,
+      status,
+      created_at,
+      updated_at
+    FROM host_event_requests`;
   }
 
   static async findAll() {
     await this.ensureSchema();
-    const connection = await pool.getConnection();
-    try {
-      const [rows] = await connection.execute(
-        `SELECT
-          id,
-          full_name,
-          email,
-          phone_number,
-          event_title,
-          event_category,
-          event_description,
-          event_date,
-          event_time,
-          event_location,
-          expected_participants,
-          additional_message,
-          hosted_event_id,
-          status,
-          created_at,
-          updated_at
-        FROM host_event_requests
-        ORDER BY created_at DESC`
-      );
-      return rows;
-    } finally {
-      connection.release();
-    }
+    const result = await db.query(`${this.selectFields()} ORDER BY created_at DESC`);
+    return result.rows;
   }
 
   static async findByEmail(email) {
     await this.ensureSchema();
-    const connection = await pool.getConnection();
-    try {
-      const [rows] = await connection.execute(
-        `SELECT
-          id,
-          full_name,
-          email,
-          phone_number,
-          event_title,
-          event_category,
-          event_description,
-          event_date,
-          event_time,
-          event_location,
-          expected_participants,
-          additional_message,
-          hosted_event_id,
-          status,
-          created_at,
-          updated_at
-        FROM host_event_requests
-        WHERE email = ?
-        ORDER BY created_at DESC`,
-        [email]
-      );
-      return rows;
-    } finally {
-      connection.release();
-    }
+    const result = await db.query(
+      `${this.selectFields()} WHERE email = $1 ORDER BY created_at DESC`,
+      [email]
+    );
+    return result.rows;
   }
 
   static async findById(id) {
     await this.ensureSchema();
-    const connection = await pool.getConnection();
-    try {
-      const [rows] = await connection.execute(
-        `SELECT
-          id,
-          full_name,
-          email,
-          phone_number,
-          event_title,
-          event_category,
-          event_description,
-          event_date,
-          event_time,
-          event_location,
-          expected_participants,
-          additional_message,
-          hosted_event_id,
-          status,
-          created_at,
-          updated_at
-        FROM host_event_requests
-        WHERE id = ?`,
-        [id]
-      );
-      return rows.length > 0 ? rows[0] : null;
-    } finally {
-      connection.release();
-    }
+    const result = await db.query(`${this.selectFields()} WHERE id = $1`, [id]);
+    return result.rows[0] || null;
   }
 
   static async updateStatus(id, status, hostedEventId = null) {
     await this.ensureSchema();
-    const connection = await pool.getConnection();
-    try {
-      const [result] = await connection.execute(
-        'UPDATE host_event_requests SET status = ?, hosted_event_id = COALESCE(?, hosted_event_id) WHERE id = ?',
-        [status, hostedEventId, id]
-      );
+    const result = await db.query(
+      `UPDATE host_event_requests
+       SET status = $1,
+           hosted_event_id = COALESCE($2, hosted_event_id),
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $3
+       RETURNING id`,
+      [status, hostedEventId, id]
+    );
 
-      if (result.affectedRows === 0) {
-        return null;
-      }
-
-      return await this.findById(id);
-    } finally {
-      connection.release();
+    if (result.rowCount === 0) {
+      return null;
     }
+
+    return this.findById(id);
   }
 }
 

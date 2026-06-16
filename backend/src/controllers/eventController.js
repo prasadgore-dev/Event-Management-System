@@ -2,7 +2,7 @@ const Event = require('../models/Event');
 
 const createEvent = async (req, res) => {
   try {
-    const { title, description, eventDate, location, capacity, registrationDeadline } = req.body;
+    const { title, description, eventDate, location, capacity, registrationDeadline, category } = req.body;
 
     // Validation
     if (!title || !description || !eventDate || !location || capacity === undefined) {
@@ -18,7 +18,7 @@ const createEvent = async (req, res) => {
       return res.status(400).json({ error: 'Event date cannot be in the past' });
     }
 
-    const event = await Event.create(title, description, eventDate, location, capacity, registrationDeadline);
+    const event = await Event.create(title, description, eventDate, location, capacity, registrationDeadline, category);
     res.status(201).json({ message: 'Event created successfully', event });
   } catch (error) {
     console.error('Create event error:', error);

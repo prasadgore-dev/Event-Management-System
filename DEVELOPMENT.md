@@ -25,8 +25,10 @@ The UI will open at `http://localhost:3000`
 
 ### 3. Database Setup
 ```bash
-mysql -u root -p < database/schema.sql
-# Enter your MySQL password when prompted
+createdb event_management_db
+cd backend
+npm run init:db
+# Enter your PostgreSQL password when prompted, if required
 ```
 
 ## Project Architecture
@@ -104,7 +106,7 @@ Dashboard → Admin Controls → EventService → API → DB → Dashboard (upda
 ## Common Issues & Solutions
 
 ### Database Connection Error
-- Ensure MySQL is running
+- Ensure PostgreSQL is running
 - Check credentials in .env
 - Verify database exists
 
