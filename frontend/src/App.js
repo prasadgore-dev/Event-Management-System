@@ -16,7 +16,7 @@ import './App.css';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/eventhub">
       <AuthProvider>
         <div className="App">
           <Navigation />

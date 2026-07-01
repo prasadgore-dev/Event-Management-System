@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Event Management System UI built with React",
   "private": true,
+  "homepage": "/eventhub",
   "engines": {
     "node": "20.x"
   },
